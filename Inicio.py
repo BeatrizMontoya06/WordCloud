@@ -1,6 +1,6 @@
 """
-☁️ WordCloud Studio — Frutiger Aero OS Edition
-Aplicación Streamlit con rediseño estructural, navegación por pestañas y estética Web 2.0 / Aero.
+🐝 BEES CLOUD — MIB Sub-Level 8 Text Analysis Terminal
+Interfaz retro-futurista de 8 bits / Fósforo Verde (MIB Style)
 
 Instalación:
     pip install streamlit wordcloud matplotlib pandas Pillow numpy
@@ -22,136 +22,164 @@ from wordcloud import WordCloud, STOPWORDS
 # CONFIGURACIÓN
 # ─────────────────────────────────────────────
 st.set_page_config(
-    page_title="WordCloud Studio — Aero OS",
-    page_icon="☁️",
+    page_title="BEES CLOUD // MIB TERMINAL",
+    page_icon="🐝",
     layout="wide",
-    initial_sidebar_state="collapsed", # Ocultamos el sidebar por defecto para usar la pantalla completa
+    initial_sidebar_state="collapsed",
 )
 
 # ─────────────────────────────────────────────
-# ESTILOS — Frutiger Aero / Aqua Glass (Rediseño de Layout)
+# ESTILOS — 8-Bit CRT / Fósforo Verde MIB
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
 
+    /* Reset global estilo Terminal CRT */
     html, body, [class*="css"] {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        font-family: 'VT323', 'Share Tech Mono', monospace !important;
+        background-color: #020b05 !important;
+        color: #33ff66 !important;
+        letter-spacing: 1px;
     }
 
-    /* Fondo acuático con destellos */
+    /* Fondo de pantalla con scanlines analógicas de los 80/90 */
     .stApp {
-        background: radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.8) 0%, transparent 40%),
-                    radial-gradient(circle at 85% 75%, rgba(120, 220, 255, 0.5) 0%, transparent 50%),
-                    linear-gradient(135deg, #a8d0e6 0%, #3796b6 50%, #005f73 100%) !important;
-        background-attachment: fixed !important;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%),
+                    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)) !important;
+        background-size: 100% 4px, 6px 100% !important;
+        background-color: #020b05 !important;
     }
 
-    /* Ocultar sidebar tradicional para usar layout panorámico */
+    /* Ocultar barra lateral por defecto */
     [data-testid="stSidebar"] {
         display: none;
     }
 
-    /* Barra Superior / Header estilo OS */
-    .aero-header {
-        background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(200,230,255,0.6) 100%);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.9);
-        border-radius: 20px;
-        padding: 18px 28px;
+    /* Encabezado Principal MIB Terminal */
+    .mib-header {
+        border: 2px solid #33ff66;
+        background-color: #001405;
+        padding: 16px 24px;
         margin-bottom: 20px;
-        box-shadow: 0 8px 32px rgba(0, 40, 80, 0.2), inset 0 1px 2px rgba(255,255,255,1);
+        box-shadow: 0 0 15px rgba(51, 255, 102, 0.3), inset 0 0 10px rgba(51, 255, 102, 0.2);
         display: flex;
-        align-items: center;
         justify-content: space-between;
+        align-items: center;
     }
 
-    /* Pestañas personalizadas (Tabs Aero) */
+    /* Pestañas estilo Sistema Militar de 8 bits */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background: rgba(0, 0, 0, 0.1);
+        gap: 10px;
+        background-color: #001405;
         padding: 6px;
-        border-radius: 16px;
-        backdrop-filter: blur(8px);
+        border: 1px solid #1a8035;
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 42px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.4);
-        color: #003554 !important;
-        font-weight: 600;
-        border: 1px solid rgba(255,255,255,0.5);
-        transition: all 0.2s ease;
+        height: 45px;
+        background-color: #020b05;
+        color: #1a8035 !important;
+        font-family: 'VT323', monospace !important;
+        font-size: 1.3rem !important;
+        border: 1px solid #1a8035 !important;
+        border-radius: 0px !important;
+        transition: all 0.1s ease;
     }
 
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(180deg, #ffffff 0%, #b3e5fc 100%) !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 1px 1px #fff !important;
-        color: #002b49 !important;
-        border: 1px solid #81d4fa !important;
+        background-color: #33ff66 !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+        border: 1px solid #33ff66 !important;
+        box-shadow: 0 0 10px rgba(51, 255, 102, 0.6) !important;
     }
 
-    /* Tarjetas de cristal (Glassmorphism) */
-    .glass-card {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(240, 248, 255, 0.45) 100%);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        border-radius: 20px;
-        padding: 22px;
-        margin-bottom: 18px;
-        box-shadow: 0 10px 30px rgba(0, 50, 100, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.9);
+    /* Contenedores Cyberpunk / MIB */
+    .mib-card {
+        background-color: #001104;
+        border: 2px solid #33ff66;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 3px 3px 0px #1a8035;
     }
 
-    /* Contensores de Widgets y Controles */
+    /* Entradas de texto e Inputs */
     textarea, input[type="text"] {
-        background: linear-gradient(180deg, #ffffff 0%, #eef7ff 100%) !important;
-        border: 1px solid #7eb4ea !important;
-        border-radius: 10px !important;
-        color: #002b49 !important;
+        background-color: #000802 !important;
+        border: 1px solid #33ff66 !important;
+        color: #33ff66 !important;
+        font-family: 'VT323', monospace !important;
+        font-size: 1.2rem !important;
+        border-radius: 0px !important;
+    }
+    textarea:focus, input[type="text"]:focus {
+        box-shadow: 0 0 8px rgba(51, 255, 102, 0.8) !important;
     }
 
+    /* Selectbox de 8 bits */
     [data-baseweb="select"] > div {
-        background: linear-gradient(180deg, #ffffff 0%, #e1f5fe 100%) !important;
-        border: 1px solid #81d4fa !important;
-        border-radius: 10px !important;
+        background-color: #000802 !important;
+        border: 1px solid #33ff66 !important;
+        color: #33ff66 !important;
+        border-radius: 0px !important;
     }
 
-    /* Botones de Gel Verde Frutiger */
+    /* Botones Neón Verde 8-bits */
     .stButton > button, [data-testid="stDownloadButton"] button {
-        background: linear-gradient(180deg, #8bc34a 0%, #4caf50 48%, #388e3c 52%, #2e7d32 100%) !important;
-        color: #ffffff !important;
-        border: 1px solid #1b5e20 !important;
-        border-radius: 25px !important;
-        font-weight: 700 !important;
-        text-shadow: 0 -1px 1px rgba(0,0,0,0.4) !important;
-        box-shadow: inset 0 1px 2px rgba(255,255,255,0.8), 0 4px 10px rgba(0,0,0,0.2) !important;
+        background-color: #002b0c !important;
+        color: #33ff66 !important;
+        border: 2px solid #33ff66 !important;
+        border-radius: 0px !important;
+        font-family: 'VT323', monospace !important;
+        font-size: 1.4rem !important;
+        text-transform: uppercase !important;
+        box-shadow: 4px 4px 0px #1a8035 !important;
+        transition: all 0.1s ease !important;
     }
     .stButton > button:hover, [data-testid="stDownloadButton"] button:hover {
-        background: linear-gradient(180deg, #aed581 0%, #66bb6a 48%, #43a047 52%, #388e3c 100%) !important;
-        transform: translateY(-1px) !important;
+        background-color: #33ff66 !important;
+        color: #000000 !important;
+        box-shadow: 0 0 12px rgba(51, 255, 102, 0.9) !important;
     }
 
-    /* Filas de la lista de frecuencias */
+    /* Métricas estilo Radar */
+    [data-testid="metric-container"] {
+        background-color: #001405 !important;
+        border: 1px solid #33ff66 !important;
+        padding: 10px !important;
+        border-radius: 0px !important;
+    }
+    [data-testid="metric-container"] label {
+        color: #1a8035 !important;
+        font-family: 'VT323', monospace !important;
+        font-size: 1.1rem !important;
+    }
+    [data-testid="metric-container"] [data-testid="stMetricValue"] {
+        color: #33ff66 !important;
+        font-family: 'VT323', monospace !important;
+        font-size: 2rem !important;
+        text-shadow: 0 0 5px #33ff66;
+    }
+
+    /* Filas de tabla / Frecuencias */
     .freq-row {
-        background: linear-gradient(90deg, rgba(255,255,255,0.7) 0%, rgba(225,245,254,0.5) 100%);
-        border: 1px solid rgba(255,255,255,0.9);
-        border-radius: 12px;
-        padding: 6px 12px;
+        background-color: #000802;
+        border: 1px solid #1a8035;
+        padding: 4px 10px;
         margin: 4px 0;
+        font-family: 'VT323', monospace;
+        font-size: 1.2rem;
     }
     .freq-bar {
-        background: linear-gradient(180deg, #29b6f6 0%, #0288d1 100%);
-        border-radius: 10px;
-        box-shadow: inset 0 1px 1px rgba(255,255,255,0.8);
+        background-color: #33ff66;
+        box-shadow: 0 0 6px #33ff66;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
-# LÓGICA DE NEGOCIO Y CONFIGURACIÓN
+# CONFIGURACIÓN Y PALETAS MIB 8-BIT
 # ─────────────────────────────────────────────
 STOPWORDS_ES = {
     "de","la","el","en","y","a","los","del","se","las","un","por","con","no","una","su",
@@ -159,8 +187,6 @@ STOPWORDS_ES = {
     "esta","entre","cuando","muy","sin","sobre","tambien","me","hasta","hay","donde",
     "quien","desde","nos","durante","ni","contra","ese","eso","ante","bajo","tras",
     "que","fue","son","han","ha","ser","era","estan","siendo","sido","he","has","hemos",
-    "habian","tiene","tienen","hacer","puede","pueden","asi","tan","parte","todo","todos",
-    "todas","cada","otro","otra","otros","otras","mismo","misma","nuestro","nuestra",
 }
 
 def obtener_stopwords(idioma):
@@ -170,11 +196,10 @@ def obtener_stopwords(idioma):
     return sw
 
 PALETAS = {
-    "Frutiger Aqua (Azul/Verde)": ["#004d40", "#00796b", "#009688", "#00acc1", "#039be5", "#0288d1", "#01579b"],
-    "Burbuja Cristal (Azul/Rosa)": ["#880e4f", "#ad1457", "#c2185b", "#d81b60", "#1976d2", "#0288d1", "#0097a7"],
-    "Escala de grises":          ["#111827","#1f2937","#374151","#4b5563","#6b7280","#9ca3af","#d1d5db"],
-    "Azul corporativo":         ["#1e3a5f","#1d4ed8","#2563eb","#3b82f6","#60a5fa","#93c5fd","#0f2942"],
-    "Verde institucional":      ["#064e3b","#065f46","#047857","#059669","#10b981","#34d399","#6ee7b7"],
+    "MIB Matrix Green":     ["#33ff66", "#00cc44", "#009933", "#66ff99", "#99ffbb", "#006622"],
+    "Alien Amber (8-bit)":  ["#ffb000", "#ffcf40", "#ff8800", "#ffd766", "#cc7700"],
+    "Sub-Level Cyan":       ["#00ffff", "#00cccc", "#66ffff", "#009999", "#99ffff"],
+    "Monochrome CRT":       ["#ffffff", "#cccccc", "#999999", "#666666", "#eeeeee"],
 }
 
 FORMAS = {"Rectángulo": None, "Círculo": "circle"}
@@ -202,16 +227,19 @@ def generar_wordcloud(texto_limpio, paleta_nombre, max_words, fondo, forma, anch
     colores = PALETAS[paleta_nombre]
     color_func = lambda *args, **kwargs: colores[random.randint(0, len(colores) - 1)]
     mascara = crear_mascara(forma, size=min(ancho, alto))
+    
+    bg_hex = "#000000" if fondo == "Negro" else "#ffffff"
+    
     wc = WordCloud(
-        width=ancho, height=alto, max_words=max_words, background_color=fondo,
+        width=ancho, height=alto, max_words=max_words, background_color=bg_hex,
         color_func=color_func, mask=mascara, collocations=False,
-        min_font_size=11, max_font_size=120, prefer_horizontal=0.75, margin=5
+        min_font_size=12, max_font_size=110, prefer_horizontal=0.9, margin=5
     ).generate(texto_limpio)
     
     fig, ax = plt.subplots(figsize=(ancho / 100, alto / 100))
-    ax.imshow(wc, interpolation="bilinear")
+    ax.imshow(wc, interpolation="nearest") # Interpolación pixelada de 8 bits
     ax.axis("off")
-    fig.patch.set_facecolor(fondo)
+    fig.patch.set_facecolor(bg_hex)
     plt.tight_layout(pad=0)
     return fig
 
@@ -223,101 +251,99 @@ def fig_a_bytes(fig):
 
 
 # ─────────────────────────────────────────────
-# NUEVA ESTRUCTURA Y NAVEGACIÓN
+# ESTRUCTURA BEES CLOUD // TERMINAL MIB
 # ─────────────────────────────────────────────
 
-# Header Superior
+# Header estilo MIB / Sub-Level 8
 st.markdown("""
-<div class="aero-header">
+<div class="mib-header">
     <div>
-        <h1 style="margin:0; font-size:1.8rem; color:#002b49;">🌐 WordCloud Studio <span style="font-size:0.9rem; color:#0288d1; font-weight:normal;">v2.0 Aero Edition</span></h1>
-        <p style="margin:0; color:#005f73; font-size:0.9rem;">Visualizador interactivo de análisis léxico y minería de texto</p>
+        <h1 style="margin:0; font-size:2.3rem; color:#33ff66; text-shadow:0 0 8px #33ff66;">🐝 BEES CLOUD</h1>
+        <p style="margin:0; color:#1a8035; font-size:1.1rem;">SUB-LEVEL 8 // TEXT ANALYSIS & FREQUENCY DECODER</p>
+    </div>
+    <div style="text-align:right; color:#33ff66;">
+        <span style="border:1px solid #33ff66; padding:4px 8px;">CLEARANCE: LEVEL 5</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Pestañas principales de navegación
-tab_editor, tab_visual, tab_datos, tab_ayuda = st.tabs([
-    "✍️ 1. Entrada de Texto", 
-    "🎨 2. Estudio de Visualización", 
-    "📊 3. Datos y Frecuencias", 
-    "❓ Ayuda & Info"
+# Tabs
+tab_editor, tab_visual, tab_datos = st.tabs([
+    "[1] INPUT_CORPUS", 
+    "[2] VISUAL_DECODER", 
+    "[3] DATA_LOGS"
 ])
 
-# Variables de estado
 if "texto_input" not in st.session_state:
     st.session_state["texto_input"] = ""
 
 # ─────────────────────────────────────────────
-# TAB 1: ENTRADA DE TEXTO
+# TAB 1: INPUT_CORPUS
 # ─────────────────────────────────────────────
 with tab_editor:
     col_input, col_preset = st.columns([2, 1], gap="medium")
     
     with col_input:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.subheader("Fuente de Texto")
-        fuente = st.radio("Método de ingreso:", ["Escribir o Pegar", "Cargar Archivo (.txt, .csv)"], horizontal=True)
+        st.markdown('<div class="mib-card">', unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#33ff66; margin-top:0;'>// CARGAR TRANSMISIÓN DE TEXTO</h3>", unsafe_allow_html=True)
+        fuente = st.radio("ORIGEN DE DATOS:", ["TEXTO DIRECTO", "ARCHIVO EXTERNO (.TXT, .CSV)"], horizontal=True)
         
-        if fuente == "Escribir o Pegar":
-            st.session_state["texto_input"] = st.text_area("Ingresa tu texto aquí:", value=st.session_state["texto_input"], height=280, placeholder="Pega un artículo, reseña, transcripción...")
+        if fuente == "TEXTO DIRECTO":
+            st.session_state["texto_input"] = st.text_area("INSERTE TEXTO CRUDO:", value=st.session_state["texto_input"], height=250, placeholder="Inyecte aquí el mensaje interceptado...")
         else:
-            archivo = st.file_uploader("Selecciona un archivo", type=["txt", "csv"])
+            archivo = st.file_uploader("SELECCIONE ARCHIVO DE DATOS:", type=["txt", "csv"])
             if archivo:
                 if archivo.name.endswith(".txt"):
                     st.session_state["texto_input"] = archivo.read().decode("utf-8", errors="ignore")
                 elif archivo.name.endswith(".csv"):
                     df_csv = pd.read_csv(archivo)
-                    col_txt = st.selectbox("Selecciona la columna con texto:", df_csv.columns.tolist())
+                    col_txt = st.selectbox("COLUMNA OBJETIVO:", df_csv.columns.tolist())
                     st.session_state["texto_input"] = " ".join(df_csv[col_txt].dropna().astype(str).tolist())
-                st.success(f"Archivo cargado correctamente ({len(st.session_state['texto_input']):,} caracteres)")
+                st.success(f">> DATOS CARGADOS: {len(st.session_state['texto_input']):,} CARACTERES")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_preset:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.subheader("Cargar Ejemplos")
+        st.markdown('<div class="mib-card">', unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#33ff66; margin-top:0;'>// REGISTROS MIB</h3>", unsafe_allow_html=True)
         ejemplos = {
-            "Inteligencia Artificial": "La inteligencia artificial transforma los sistemas modernos mediante el aprendizaje automático...",
-            "Tecnología 4.0": "La cuarta revolución industrial integra el internet de las cosas, analítica de datos y robótica...",
-            "Colombia": "Colombia es un país biodiverso con ecosistemas que van desde los Andes hasta el Amazonas..."
+            "Archivo X-01 (Inteligencia Artificial)": "La inteligencia artificial interceptada muestra patrones avanzadas de aprendizaje automático y procesamiento cognitivo autónomo...",
+            "Informe MIB-4 (Tecnología 4.0)": "Los sensores de subnivel registran convergencia de internet de las cosas, analítica masiva y cibernética autónoma...",
+            "Expediente B-09 (Bioma)": "Análisis de biodiversidad territorial con ecosistemas de alta prioridad y biodiversidad crítica..."
         }
-        ejemplo_sel = st.selectbox("Elige una muestra:", list(ejemplos.keys()))
-        if st.button("Usar este texto de ejemplo", use_container_width=True):
+        ejemplo_sel = st.selectbox("EXPEDIENTES DE PRUEBA:", list(ejemplos.keys()))
+        if st.button("CARGAR EXPEDIENTE", use_container_width=True):
             st.session_state["texto_input"] = ejemplos[ejemplo_sel]
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
-# TAB 2: ESTUDIO DE VISUALIZACIÓN (PANEL DERECHO)
+# TAB 2: VISUAL_DECODER
 # ─────────────────────────────────────────────
 with tab_visual:
     col_canvas, col_controls = st.columns([3, 1], gap="medium")
 
-    # Controles en la columna derecha
     with col_controls:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-        st.subheader("Ajustes de Diseño")
+        st.markdown('<div class="mib-card">', unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#33ff66; margin-top:0;'>// PARÁMETROS</h3>", unsafe_allow_html=True)
         
-        idioma = st.selectbox("Stopwords:", ["Español", "Inglés", "Ambos", "Ninguno"])
-        min_longitud = st.slider("Largo mín. de palabra:", 2, 8, 3)
-        palabras_extra = st.text_input("Excluir palabra (sep. comas):", placeholder="ej: además, también")
+        idioma = st.selectbox("FILTRO STOPWORDS:", ["Español", "Inglés", "Ambos", "Ninguno"])
+        min_longitud = st.slider("LONGITUD MÍNIMA:", 2, 8, 3)
+        palabras_extra = st.text_input("EXCLUIR PALABRAS:", placeholder="ej: además, previo")
         
-        st.divider()
-        paleta_sel = st.selectbox("Paleta cromática:", list(PALETAS.keys()))
-        fondo_sel = st.radio("Color de fondo:", ["Blanco", "Negro"], horizontal=True)
-        fondo_color = "white" if fondo_sel == "Blanco" else "black"
-        forma_sel = st.selectbox("Máscara visual:", list(FORMAS.keys()))
-        max_words = st.slider("Máx. de palabras:", 20, 200, 80)
+        st.markdown("---")
+        paleta_sel = st.selectbox("PALETA FÓSFORO:", list(PALETAS.keys()))
+        fondo_sel = st.radio("FONDO MATRIZ:", ["Negro", "Blanco"], horizontal=True)
+        forma_sel = st.selectbox("MÁSCARA RADAR:", list(FORMAS.keys()))
+        max_words = st.slider("MÁX. TÉRMINOS:", 20, 200, 80)
         
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # Nube en la columna izquierda
     with col_canvas:
-        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.markdown('<div class="mib-card">', unsafe_allow_html=True)
         
         if not st.session_state["texto_input"].strip():
-            st.info("👈 Por favor ingresa texto en la pestaña **1. Entrada de Texto** para generar la nube.")
+            st.warning(">> ADVERTENCIA: NO HAY DATOS DE TEXTO CARGADOS. VAYA A [1] INPUT_CORPUS.")
         else:
             stopwords_set = obtener_stopwords(idioma) if idioma != "Ninguno" else set()
             if palabras_extra.strip():
@@ -326,83 +352,68 @@ with tab_visual:
             texto_limpio = limpiar_texto(st.session_state["texto_input"], stopwords_set, min_longitud)
 
             if not texto_limpio.strip():
-                st.error("El texto resultante está vacío tras aplicar los filtros.")
+                st.error(">> ERROR: EL CORPUS QUEDÓ VACÍO TRAS EL FILTRADO DE STOPWORDS.")
             else:
-                with st.spinner("Sintetizando gráfica de nube..."):
+                with st.spinner("PROCESANDO MATRIZ DE 8 BITS..."):
                     fig_wc = generar_wordcloud(
-                        texto_limpio, paleta_sel, max_words, fondo_color,
+                        texto_limpio, paleta_sel, max_words, fondo_sel,
                         FORMAS[forma_sel], ancho=1000, alto=520
                     )
                 
                 st.pyplot(fig_wc, use_container_width=True)
                 
-                # Descarga abajo de la canvas
                 img_bytes = fig_a_bytes(fig_wc)
-                st.download_button("⬇️ Descargar Imagen en PNG", data=img_bytes, file_name="wordcloud_aero.png", mime="image/png", use_container_width=True)
+                st.download_button("⬇ EXPORTAR MAPA DE BITS (.PNG)", data=img_bytes, file_name="bees_cloud_8bit.png", mime="image/png", use_container_width=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
-# TAB 3: DATOS Y FRECUENCIAS
+# TAB 3: DATA_LOGS
 # ─────────────────────────────────────────────
 with tab_datos:
     if not st.session_state["texto_input"].strip():
-        st.warning("No hay datos para procesar. Ingresa un texto primero.")
+        st.warning(">> REGISTRO VACÍO. INGRESE DATOS EN LA TAB 1.")
     else:
         stopwords_set = obtener_stopwords(idioma) if idioma != "Ninguno" else set()
         texto_limpio = limpiar_texto(st.session_state["texto_input"], stopwords_set, min_longitud)
         df_freq = contar_palabras(texto_limpio)
         
-        # Métricas principales arriba
         m1, m2, m3 = st.columns(3)
-        m1.metric("Total de Palabras Procesadas", len(texto_limpio.split()))
-        m2.metric("Vocabulario Único", len(df_freq))
-        m3.metric("Palabra Dominante", df_freq.iloc[0]["Palabra"] if not df_freq.empty else "—")
+        m1.metric("TOTAL PALABRAS PROCESADAS", len(texto_limpio.split()))
+        m2.metric("VOCABULARIO ÚNICO", len(df_freq))
+        m3.metric("TÉRMINO DOMINANTE", df_freq.iloc[0]["Palabra"] if not df_freq.empty else "N/A")
         
         st.markdown("<br>", unsafe_allow_html=True)
         
         col_list, col_tbl = st.columns([1, 1], gap="medium")
         
         with col_list:
-            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-            st.subheader("Top 15 Frecuencias")
+            st.markdown('<div class="mib-card">', unsafe_allow_html=True)
+            st.markdown("<h3 style='color:#33ff66; margin-top:0;'>// FRECUENCIA TOP 15</h3>", unsafe_allow_html=True)
             top15 = df_freq.head(15)
             max_f = top15["Frecuencia"].max() if not top15.empty else 1
             
             for rank, (_, row) in enumerate(top15.iterrows(), 1):
                 p, f = row["Palabra"], int(row["Frecuencia"])
-                w = max(10, int((f / max_f) * 180))
+                w = max(8, int((f / max_f) * 160))
                 st.markdown(
                     f'<div class="freq-row" style="display:flex; align-items:center; justify-content:space-between;">'
-                    f'<span><b>#{rank:02d}</b> {p}</span>'
+                    f'<span style="color:#33ff66;"><b>[{rank:02d}]</b> {p.upper()}</span>'
                     f'<div style="display:flex; align-items:center; gap:8px;">'
-                    f'<div class="freq-bar" style="width:{w}px; height:10px;"></div>'
-                    f'<b>{f}</b>'
+                    f'<div class="freq-bar" style="width:{w}px; height:8px;"></div>'
+                    f'<b style="color:#33ff66;">{f}</b>'
                     f'</div></div>',
                     unsafe_allow_html=True
                 )
             st.markdown('</div>', unsafe_allow_html=True)
 
         with col_tbl:
-            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-            st.subheader("Tabla Completa")
+            st.markdown('<div class="mib-card">', unsafe_allow_html=True)
+            st.markdown("<h3 style='color:#33ff66; margin-top:0;'>// TABLA COMPLETA</h3>", unsafe_allow_html=True)
             st.dataframe(df_freq, use_container_width=True, height=380)
             csv_bytes = df_freq.to_csv(index=False).encode("utf-8")
-            st.download_button("⬇️️ Exportar CSV de Frecuencias", data=csv_bytes, file_name="frecuencias.csv", mime="text/csv", use_container_width=True)
+            st.download_button("⬇ EXPORTAR REGISTROS (.CSV)", data=csv_bytes, file_name="bees_cloud_data.csv", mime="text/csv", use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
-
-
-# ─────────────────────────────────────────────
-# TAB 4: AYUDA E INFORMACIÓN
-# ─────────────────────────────────────────────
-with tab_ayuda:
-    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
-    st.subheader("¿Qué es este sistema?")
-    st.write("""
-    Esta aplicación procesa textos en español e inglés, descarta automáticamente conectores y palabras irrelevantes 
-    (*stopwords*), y calcula las métricas cuantitativas para generar gráficos con la técnica de empaquetado léxico.
-    """)
-    st.markdown('</div>', unsafe_allow_html=True)
 
 plt.close("all")
